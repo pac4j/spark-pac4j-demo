@@ -7,7 +7,6 @@ import org.pac4j.http.client.FormClient;
 import org.pac4j.http.credentials.SimpleTestUsernamePasswordAuthenticator;
 import org.pac4j.http.profile.UsernameProfileCreator;
 import org.pac4j.oauth.client.FacebookClient;
-import org.pac4j.oauth.client.StravaClient;
 import org.pac4j.oauth.client.TwitterClient;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.saml.client.Saml2Client;
@@ -42,18 +41,8 @@ public class ClientsBuilder {
         casClient.setCasLoginUrl("http://localhost:8888/cas/login");
         casClient.setCasPrefixUrl("http://localhost:8888/cas/p3");
 
-
-        // Strava
-        final StravaClient stravaClient = new StravaClient();
-        stravaClient.setApprovalPrompt("auto");
-        // client_id
-        stravaClient.setKey("3945");
-        // client_secret
-        stravaClient.setSecret("f03df80582396cddfbe0b895a726bac27c8cf739");
-        stravaClient.setScope("view_private");
-
         final Clients clients = new Clients("http://localhost:8080/callback", oidcClient, saml2Client, facebookClient,
-                twitterClient, formClient, basicAuthClient, casClient, stravaClient);
+                twitterClient, formClient, basicAuthClient, casClient);
         return clients;
 	}
 }

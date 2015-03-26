@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spark.Filter;
+import spark.HaltException;
 import spark.Request;
 import spark.Response;
 
@@ -51,6 +52,7 @@ public class RequiresAuthenticationFilter implements Filter {
                 client.redirect(context, true, false);
             } catch (RequiresHttpAction e) {
                 logger.debug("extra HTTP action required : {}", e.getCode());
+                //halt()
             }
         }
 	}

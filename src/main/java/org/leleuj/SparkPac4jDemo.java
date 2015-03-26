@@ -28,8 +28,24 @@ public class SparkPac4jDemo {
 		get("/", (rq, rs) -> index(rq, rs, clients), templateEngine);
 		get("/callback", new CallbackRoute(clients));
 		before("/facebook", new RequiresAuthenticationFilter(clients, "FacebookClient"));
+		before("/twitter", new RequiresAuthenticationFilter(clients, "TwitterClient"));
+		before("/form", new RequiresAuthenticationFilter(clients, "FormClient"));
+		before("/basicauth", new RequiresAuthenticationFilter(clients, "BasicAuthClient"));
+		before("/cas", new RequiresAuthenticationFilter(clients, "CasClient"));
+		before("/saml", new RequiresAuthenticationFilter(clients, "Saml2Client"));
+		before("/oidc", new RequiresAuthenticationFilter(clients, "OidcClient"));
 		get("/facebook", (rq, rs) -> protectedIndex(rq), templateEngine);
 		get("/twitter", (rq, rs) -> protectedIndex(rq), templateEngine);
+		get("/form", (rq, rs) -> protectedIndex(rq), templateEngine);
+		get("/basicauth", (rq, rs) -> protectedIndex(rq), templateEngine);
+		get("/cas", (rq, rs) -> protectedIndex(rq), templateEngine);
+		get("/saml", (rq, rs) -> protectedIndex(rq), templateEngine);
+		get("/oidc", (rq, rs) -> protectedIndex(rq), templateEngine);
+		get("/logout", (rq, rs) -> {
+			UserUtils.logout(rq);
+			rs.redirect("/");
+			return null;
+		});
 	}
 
 	private static ModelAndView index(final Request request, final Response response,

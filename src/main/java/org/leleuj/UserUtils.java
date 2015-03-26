@@ -7,11 +7,15 @@ import spark.Request;
 
 public class UserUtils {
 
-	public static CommonProfile getProfile(Request request) {
+	public static CommonProfile getProfile(final Request request) {
 		return request.session().attribute(Pac4jConstants.USER_PROFILE);
 	}
 	
-	public static void setProfile(Request request, CommonProfile profile) {
+	public static void setProfile(final Request request, final CommonProfile profile) {
 		request.session().attribute(Pac4jConstants.USER_PROFILE, profile);
+	}
+	
+	public static void logout(final Request request) {
+		setProfile(request, null);
 	}
 }
