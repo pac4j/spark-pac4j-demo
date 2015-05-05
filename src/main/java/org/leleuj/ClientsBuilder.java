@@ -30,7 +30,7 @@ public class ClientsBuilder {
         final TwitterClient twitterClient = new TwitterClient("CoxUiYwQOSFDReZYdjigBA",
                 "2kAzunH5Btc4gRSaMr7D7MkyoJ5u1VzbOOzE8rBofs");
         // HTTP
-        final FormClient formClient = new FormClient("http://localhost:8080/theForm.jsp",
+        final FormClient formClient = new FormClient("http://localhost:8080/theForm",
                 new SimpleTestUsernamePasswordAuthenticator(), new UsernameProfileCreator());
         final BasicAuthClient basicAuthClient = new BasicAuthClient(new SimpleTestUsernamePasswordAuthenticator(),
                 new UsernameProfileCreator());

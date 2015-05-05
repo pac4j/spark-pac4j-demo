@@ -7,16 +7,12 @@ import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.RequiresHttpAction;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.util.CommonHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class CallbackRoute implements Route {
-
-	private static final Logger logger = LoggerFactory.getLogger(CallbackRoute.class);
+public class CallbackRoute extends ExtraHttpActionHandler implements Route {
 	
 	private final Clients clients;
 
@@ -37,7 +33,7 @@ public class CallbackRoute implements Route {
         try {
             credentials = client.getCredentials(context);
         } catch (final RequiresHttpAction e) {
-            logger.debug("extra HTTP action required : {}", e.getCode());
+            handle(e);
             return null;
         }
         logger.debug("credentials : {}", credentials);

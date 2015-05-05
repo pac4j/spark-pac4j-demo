@@ -7,17 +7,12 @@ import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.RequiresHttpAction;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.util.CommonHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import spark.Filter;
-import spark.HaltException;
 import spark.Request;
 import spark.Response;
 
-public class RequiresAuthenticationFilter implements Filter {
-
-	private static final Logger logger = LoggerFactory.getLogger(RequiresAuthenticationFilter.class);
+public class RequiresAuthenticationFilter extends ExtraHttpActionHandler implements Filter {
 
 	private final Clients clients;
 
@@ -31,9 +26,9 @@ public class RequiresAuthenticationFilter implements Filter {
 	@Override
 	public void handle(Request request, Response response) {
         final CommonProfile profile = UserUtils.getProfile(request);
-        logger.debug("profile : {}", profile);
+        logger.debug("profile: {}", profile);
 
-        // profile null, not authenticated
+        // null profile, not authenticated
         if (profile == null) {
             // no authentication tried -> redirect to provider
             // keep the current url
@@ -42,7 +37,7 @@ public class RequiresAuthenticationFilter implements Filter {
             if (CommonHelper.isNotBlank(queryString)) {
                 requestedUrl += "?" + queryString;
             }
-            logger.debug("requestedUrl : {}", requestedUrl);
+            logger.debug("requestedUrl: {}", requestedUrl);
             request.session().attribute(Pac4jConstants.REQUESTED_URL, requestedUrl);
             // compute and perform the redirection
             final SparkWebContext context = new SparkWebContext(request, response);
@@ -51,8 +46,7 @@ public class RequiresAuthenticationFilter implements Filter {
             try {
                 client.redirect(context, true, false);
             } catch (RequiresHttpAction e) {
-                logger.debug("extra HTTP action required : {}", e.getCode());
-                //halt()
+                handle(e);
             }
         }
 	}
