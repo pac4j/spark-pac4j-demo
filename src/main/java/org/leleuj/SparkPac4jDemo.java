@@ -8,12 +8,20 @@ import static spark.SparkBase.setPort;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.pac4j.cas.client.CasClient;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.profile.CommonProfile;
+import org.pac4j.http.client.BasicAuthClient;
 import org.pac4j.http.client.FormClient;
 import org.pac4j.oauth.client.FacebookClient;
 import org.pac4j.oauth.client.TwitterClient;
 
+import org.pac4j.oidc.client.OidcClient;
+import org.pac4j.saml.client.Saml2Client;
+import org.pac4j.sparkjava.CallbackRoute;
+import org.pac4j.sparkjava.RequiresAuthenticationFilter;
+import org.pac4j.sparkjava.SparkWebContext;
+import org.pac4j.sparkjava.UserUtils;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -62,6 +70,11 @@ public class SparkPac4jDemo {
 		map.put("profile", profile);
 		map.put("facebookUrl", clients.findClient(FacebookClient.class).getRedirectionUrl(context));
 		map.put("twitterUrl", clients.findClient(TwitterClient.class).getRedirectionUrl(context));
+		map.put("formUrl", clients.findClient(FormClient.class).getRedirectionUrl(context));
+		map.put("baUrl", clients.findClient(BasicAuthClient.class).getRedirectionUrl(context));
+		map.put("casUrl", clients.findClient(CasClient.class).getRedirectionUrl(context));
+		map.put("samlUrl", clients.findClient(Saml2Client.class).getRedirectionUrl(context));
+		map.put("oidcUrl", clients.findClient(OidcClient.class).getRedirectionUrl(context));
 		return new ModelAndView(map, "index.mustache");
 	}
 

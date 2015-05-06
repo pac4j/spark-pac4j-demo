@@ -1,6 +1,7 @@
 ## What is this project ?
 
-This **spark-pac4j-demo** project is a Java application to test the Spark java framework with Facebook, Twitter, form authentication, basic auth, CAS... everything based on pac4j.
+This **spark-pac4j-demo** project is a Java web application to test the [spark-pac4j library](https://github.com/pac4j/spark-pac4j) with Facebook, Twitter, form authentication, basic auth, CAS...
+The **spark-pac4j** library is built to delegate authentication to a provider and be authenticated back in the protected application with a complete user profile retrieved from the provider.
 
 ## Quick start & test
 
