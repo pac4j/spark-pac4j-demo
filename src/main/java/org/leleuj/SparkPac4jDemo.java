@@ -45,14 +45,14 @@ public class SparkPac4jDemo {
 		before("/form", new RequiresAuthenticationFilter(clients, "FormClient"));
 		before("/basicauth", new RequiresAuthenticationFilter(clients, "BasicAuthClient"));
 		before("/cas", new RequiresAuthenticationFilter(clients, "CasClient"));
-		before("/saml", new RequiresAuthenticationFilter(clients, "Saml2Client"));
+		before("/saml2", new RequiresAuthenticationFilter(clients, "Saml2Client"));
 		before("/oidc", new RequiresAuthenticationFilter(clients, "OidcClient"));
 		get("/facebook", (rq, rs) -> protectedIndex(rq), templateEngine);
 		get("/twitter", (rq, rs) -> protectedIndex(rq), templateEngine);
 		get("/form", (rq, rs) -> protectedIndex(rq), templateEngine);
 		get("/basicauth", (rq, rs) -> protectedIndex(rq), templateEngine);
 		get("/cas", (rq, rs) -> protectedIndex(rq), templateEngine);
-		get("/saml", (rq, rs) -> protectedIndex(rq), templateEngine);
+		get("/saml2", (rq, rs) -> protectedIndex(rq), templateEngine);
 		get("/oidc", (rq, rs) -> protectedIndex(rq), templateEngine);
 		get("/theForm", (rq, rs) -> form(rq, clients), templateEngine);
 		get("/logout", (rq, rs) -> {
