@@ -17,7 +17,7 @@ import org.pac4j.oauth.client.FacebookClient;
 import org.pac4j.oauth.client.TwitterClient;
 
 import org.pac4j.oidc.client.OidcClient;
-import org.pac4j.saml.client.Saml2Client;
+import org.pac4j.saml.client.SAML2Client;
 import org.pac4j.sparkjava.CallbackRoute;
 import org.pac4j.sparkjava.RequiresAuthenticationFilter;
 import org.pac4j.sparkjava.SparkWebContext;
@@ -35,7 +35,7 @@ public class SparkPac4jDemo {
 
 	public static void main(String[] args) {
 		setPort(8080);
-		final Clients clients = ClientsBuilder.build();
+		final Clients clients = new ClientsBuilder().build(null);
 		get("/", (rq, rs) -> index(rq, rs, clients), templateEngine);
 		final Route callback = new CallbackRoute(clients);
 		get("/callback", callback);
@@ -73,7 +73,7 @@ public class SparkPac4jDemo {
 		map.put("formUrl", clients.findClient(FormClient.class).getRedirectionUrl(context));
 		map.put("baUrl", clients.findClient(BasicAuthClient.class).getRedirectionUrl(context));
 		map.put("casUrl", clients.findClient(CasClient.class).getRedirectionUrl(context));
-		map.put("samlUrl", clients.findClient(Saml2Client.class).getRedirectionUrl(context));
+		map.put("samlUrl", clients.findClient(SAML2Client.class).getRedirectionUrl(context));
 		map.put("oidcUrl", clients.findClient(OidcClient.class).getRedirectionUrl(context));
 		return new ModelAndView(map, "index.mustache");
 	}
