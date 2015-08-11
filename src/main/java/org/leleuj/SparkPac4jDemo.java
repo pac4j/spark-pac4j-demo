@@ -17,11 +17,13 @@ import org.pac4j.oauth.client.FacebookClient;
 import org.pac4j.oauth.client.TwitterClient;
 
 import org.pac4j.oidc.client.OidcClient;
-import org.pac4j.saml.client.SAML2Client;
+import org.pac4j.saml.client.Saml2Client;
 import org.pac4j.sparkjava.CallbackRoute;
 import org.pac4j.sparkjava.RequiresAuthenticationFilter;
 import org.pac4j.sparkjava.SparkWebContext;
 import org.pac4j.sparkjava.UserUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -31,11 +33,19 @@ import spark.template.mustache.MustacheTemplateEngine;
 @SuppressWarnings({"unchecked", "deprecation", "rawtypes"})
 public class SparkPac4jDemo {
 
+	private final static Logger logger = LoggerFactory.getLogger(SparkPac4jDemo.class);
+
 	private final static MustacheTemplateEngine templateEngine = new MustacheTemplateEngine();
 
 	public static void main(String[] args) {
 		setPort(8080);
 		final Clients clients = new ClientsBuilder().build(null);
+
+		/*SAML2Client samlclient = clients.findClient(SAML2Client.class);
+		samlclient.init();
+		String spMetadata = samlclient.getServiceProviderMetadataResolver().getMetadata();
+		logger.info(spMetadata);*/
+
 		get("/", (rq, rs) -> index(rq, rs, clients), templateEngine);
 		final Route callback = new CallbackRoute(clients);
 		get("/callback", callback);
@@ -45,7 +55,7 @@ public class SparkPac4jDemo {
 		before("/form", new RequiresAuthenticationFilter(clients, "FormClient"));
 		before("/basicauth", new RequiresAuthenticationFilter(clients, "BasicAuthClient"));
 		before("/cas", new RequiresAuthenticationFilter(clients, "CasClient"));
-		before("/saml2", new RequiresAuthenticationFilter(clients, "SAML2Client"));
+		before("/saml2", new RequiresAuthenticationFilter(clients, "Saml2Client"));
 		before("/oidc", new RequiresAuthenticationFilter(clients, "OidcClient"));
 		get("/facebook", (rq, rs) -> protectedIndex(rq), templateEngine);
 		get("/twitter", (rq, rs) -> protectedIndex(rq), templateEngine);
@@ -73,7 +83,7 @@ public class SparkPac4jDemo {
 		map.put("formUrl", clients.findClient(FormClient.class).getRedirectionUrl(context));
 		map.put("baUrl", clients.findClient(BasicAuthClient.class).getRedirectionUrl(context));
 		map.put("casUrl", clients.findClient(CasClient.class).getRedirectionUrl(context));
-		map.put("samlUrl", clients.findClient(SAML2Client.class).getRedirectionUrl(context));
+		map.put("samlUrl", clients.findClient(Saml2Client.class).getRedirectionUrl(context));
 		map.put("oidcUrl", clients.findClient(OidcClient.class).getRedirectionUrl(context));
 		return new ModelAndView(map, "index.mustache");
 	}

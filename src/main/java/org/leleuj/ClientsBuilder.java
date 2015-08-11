@@ -11,10 +11,7 @@ import org.pac4j.oauth.client.FacebookClient;
 import org.pac4j.oauth.client.StravaClient;
 import org.pac4j.oauth.client.TwitterClient;
 import org.pac4j.oidc.client.OidcClient;
-import org.pac4j.saml.client.SAML2Client;
-import org.pac4j.saml.client.SAML2ClientConfiguration;
-
-import java.io.File;
+import org.pac4j.saml.client.Saml2Client;
 
 public class ClientsBuilder implements ClientsFactory {
 
@@ -26,14 +23,19 @@ public class ClientsBuilder implements ClientsFactory {
                 oidcClient.setDiscoveryURI("https://accounts.google.com/.well-known/openid-configuration");
                 oidcClient.addCustomParam("prompt", "consent");
 
-                final SAML2ClientConfiguration cfg = new SAML2ClientConfiguration("resource:samlKeystore.jks",
+                /*final SAML2ClientConfiguration cfg = new SAML2ClientConfiguration("resource:samlKeystore.jks",
                         "pac4j-demo-passwd",
                         "pac4j-demo-passwd",
                         "resource:testshib-providers.xml");
                 cfg.setMaximumAuthenticationLifetime(3600);
                 cfg.setServiceProviderEntityId("urn:mace:saml:pac4j.org");
                 cfg.setServiceProviderMetadataPath(new File("target", "sp-metadata.xml").getAbsolutePath());
-                final SAML2Client saml2Client = new SAML2Client(cfg);
+                final SAML2Client saml2Client = new SAML2Client(cfg);*/
+                final Saml2Client saml2Client = new Saml2Client();
+                saml2Client.setKeystorePath("resource:samlKeystore.jks");
+                saml2Client.setKeystorePassword("pac4j-demo-passwd");
+                saml2Client.setPrivateKeyPassword("pac4j-demo-passwd");
+                saml2Client.setIdpMetadataPath("resource:testshib-providers.xml");
 
                 final FacebookClient facebookClient = new FacebookClient("145278422258960", "be21409ba8f39b5dae2a7de525484da8");
                 final TwitterClient twitterClient = new TwitterClient("CoxUiYwQOSFDReZYdjigBA",
