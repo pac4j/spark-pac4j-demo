@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.leleuj</groupId>
+	<groupId>org.pac4j.demo</groupId>
 	<artifactId>spark-pac4j-demo</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>spark-pac4j Demo</name>
+	<name>spark-pac4j demo</name>
 
 	<repositories>
 		<repository>
@@ -33,19 +33,27 @@
 	</repositories>
 
 	<properties>
-		<pac4jVersion>1.7.0</pac4jVersion>
+		<java.version>1.8</java.version>
+		<sparkPac4j.version>1.1.0-SNAPSHOT</sparkPac4j.version>
+		<pac4jVersion>1.8.2</pac4jVersion>
 	</properties>
 
 	<dependencies>
 		<dependency>
 		    <groupId>com.sparkjava</groupId>
 		    <artifactId>spark-template-mustache</artifactId>
-		    <version>1.0.0</version>
+		    <version>2.3</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-simple</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.pac4j</groupId>
 			<artifactId>spark-pac4j</artifactId>
-			<version>1.0.3-SNAPSHOT</version>
+			<version>${sparkPac4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.pac4j</groupId>
@@ -66,12 +74,6 @@
 			<groupId>org.pac4j</groupId>
 			<artifactId>pac4j-cas</artifactId>
 			<version>${pac4jVersion}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.pac4j</groupId>
@@ -84,9 +86,29 @@
 			<version>${pac4jVersion}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.6.4</version>
+			<groupId>org.pac4j</groupId>
+			<artifactId>pac4j-jwt</artifactId>
+			<version>${pac4jVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.pac4j</groupId>
+			<artifactId>pac4j-sql</artifactId>
+			<version>${pac4jVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.pac4j</groupId>
+			<artifactId>pac4j-ldap</artifactId>
+			<version>${pac4jVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.pac4j</groupId>
+			<artifactId>pac4j-mongo</artifactId>
+			<version>${pac4jVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.pac4j</groupId>
+			<artifactId>pac4j-stormpath</artifactId>
+			<version>${pac4jVersion}</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -100,24 +122,16 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.5.1</version>
+				<version>3.3</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.7</version>
-				<configuration>
-					<wtpversion>2.0</wtpversion>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2.1</version>
+				<version>1.4.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -126,7 +140,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<mainClass>org.leleuj.SparkPac4jDemo</mainClass>
+					<mainClass>org.pac4j.demo.spark.SparkPac4jDemo</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>

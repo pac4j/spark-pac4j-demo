@@ -6,9 +6,9 @@
     </encoder>
   </appender>
 
-  <!--logger name="org.pac4j" level="DEBUG" /-->
+  <logger name="org.pac4j.sparkjava" level="DEBUG" />
   
-  <root level="INFO">
+  <root level="WARN">
     <appender-ref ref="STDOUT" />
   </root>
 </configuration>
