@@ -6,7 +6,7 @@ This `spark-pac4j-demo` project is a SparkJava application to test the [spark-pa
 
 ## Start & test
 
-Build the project and launch the web app on [http://localhost:8080](http://localhost:8080):
+Build the project and launch the SparkJava app on [http://localhost:8080](http://localhost:8080):
 
     cd spark-pac4j-demo
     mvn compile exec:java
