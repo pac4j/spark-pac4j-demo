@@ -1,14 +1,14 @@
-## What is this project ?
+<p align="center">
+  <img src="https://pac4j.github.io/pac4j/img/logo-spark.png" width="300" />
+</p>
 
-This **spark-pac4j-demo** project is a Java web application to test the [spark-pac4j library](https://github.com/pac4j/spark-pac4j) with Facebook, Twitter, form authentication, basic auth, CAS...
-The **spark-pac4j** library is built to delegate authentication to a provider and be authenticated back in the protected application with a complete user profile retrieved from the provider.
+This `spark-pac4j-demo` project is a SparkJava application to test the [spark-pac4j](https://github.com/pac4j/spark-pac4j) security library with various authentication mechanisms: Facebook, Twitter, form, basic auth, CAS, SAML, OpenID Connect, JWT...
 
-## Quick start & test
+## Start & test
 
-To start quickly, build the project and launch the web app with jetty :
+Build the project and launch the SparkJava app on [http://localhost:8080](http://localhost:8080):
 
     cd spark-pac4j-demo
     mvn compile exec:java
 
-To test, you can call a protected url by clicking on the "Protected by **xxx** : **xxx**/index.jsp" url, which will start the authentication process with the **xxx** provider.  
-Or you can click on the "Authenticate with **xxx**" link, to start manually the authentication process with the **xxx** provider.
+To test, you can call a protected url by clicking on the "Protected url by **xxx**" link, which will start the authentication process with the **xxx** provider.
