@@ -2,7 +2,7 @@
 <a href="/facebook">Protected url by Facebook: /facebook</a> (use a real account)<br />
 <a href="/facebook/notprotected">Not protected page: /facebook/notprotected</a> (no authentication required)<br />
 <a href="/facebookadmin">Protected url by Facebook with ROLE_ADMIN: /facebookadmin</a> (use a real account)<br />
-<a href="/facebookcustom">Protected url by Facebook with custom authorizer (= must be a <em>HttpProfile</em> where the username starts with "jle"): facebookcustom/index.jsp</a> (login with form or basic authentication before with jle* username)<br />
+<a href="/facebookcustom">Protected url by Facebook with custom authorizer (= must be a <em>CommonProfile</em> where the username starts with "jle"): /facebookcustom</a> (login with form or basic authentication before with jle* username)<br />
 <a href="/twitter">Protected url by Twitter: /twitter</a> or <a href="/twitter?client_name=FacebookClient">by Facebook: /twitter?client_name=FacebookClient</a> (use a real account)<br />
 <a href="/form">Protected url by form authentication: /form</a> (use login = pwd)<br />
 <a href="/basicauth">Protected url by indirect basic auth: /basicauth</a> (use login = pwd)<br />
@@ -15,6 +15,8 @@
 <a href="/dba">Protected url by DirectBasicAuthClient: /dba</a> (POST the <em>Authorization</em> header with value: <em>Basic amxlbGV1OmpsZWxldQ==</em>) then by <a href="/dba">ParameterClient: /dba</a> (with request parameter: token=<em>jwt_generated_token</em>)<br />
 <a href="/rest-jwt">Protected url by ParameterClient: /rest-jwt</a> (with request parameter: token=<em>jwt_generated_token</em>)<br />
 <br />
-<a href="/logout?url=/">logout</a>
+<a href="forceLogin?client_name=FacebookClient">Force Facebook login</a> (even if already authenticated)<br />
+<br />
+<a href="/logout?url=/?forcepostlogouturl">logout</a>
 <br /><br />
-profile : {{profile}}
+profiles: {{profiles}}

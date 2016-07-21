@@ -1,8 +1,8 @@
 package org.pac4j.demo.spark;
 
 import org.pac4j.core.context.HttpConstants;
-import org.pac4j.core.context.WebContext;
 import org.pac4j.sparkjava.DefaultHttpActionAdapter;
+import org.pac4j.sparkjava.SparkWebContext;
 import spark.ModelAndView;
 import spark.TemplateEngine;
 
@@ -19,7 +19,7 @@ public class DemoHttpActionAdapter extends DefaultHttpActionAdapter {
     }
 
     @Override
-    public Object adapt(int code, WebContext context) {
+    public Object adapt(int code, SparkWebContext context) {
         if (code == HttpConstants.UNAUTHORIZED) {
             halt(401, templateEngine.render(new ModelAndView(new HashMap<>(), "error401.mustache")));
         } else if (code == HttpConstants.FORBIDDEN) {

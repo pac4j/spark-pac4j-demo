@@ -1,7 +1,7 @@
 package org.pac4j.demo.spark;
 
 import org.pac4j.cas.client.CasClient;
-import org.pac4j.core.authorization.RequireAnyRoleAuthorizer;
+import org.pac4j.core.authorization.authorizer.RequireAnyRoleAuthorizer;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.config.ConfigFactory;
@@ -39,6 +39,7 @@ public class DemoConfigFactory implements ConfigFactory {
         oidcClient.setUseNonce(true);
         //oidcClient.setPreferredJwsAlgorithm(JWSAlgorithm.RS256);
         oidcClient.addCustomParam("prompt", "consent");
+        oidcClient.setAuthorizationGenerator(profile -> profile.addRole("ROLE_ADMIN"));
 
         final SAML2ClientConfiguration cfg = new SAML2ClientConfiguration("resource:samlKeystore.jks",
                                                 "pac4j-demo-passwd",
