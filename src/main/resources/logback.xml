@@ -7,7 +7,8 @@
   </appender>
 
   <logger name="org.pac4j.sparkjava" level="DEBUG" />
-  
+  <logger name="org.pac4j.core.engine" level="DEBUG" />
+
   <root level="WARN">
     <appender-ref ref="STDOUT" />
   </root>
