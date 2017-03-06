@@ -3,10 +3,15 @@ package org.pac4j.demo.spark;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.core.authorization.authorizer.RequireAnyRoleAuthorizer;
 import org.pac4j.core.client.Clients;
+import org.pac4j.core.client.direct.AnonymousClient;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.config.ConfigFactory;
+import org.pac4j.core.credentials.TokenCredentials;
 import org.pac4j.core.matching.ExcludedPathMatcher;
+import org.pac4j.core.profile.CommonProfile;
+import org.pac4j.core.util.CommonHelper;
 import org.pac4j.http.client.direct.DirectBasicAuthClient;
+import org.pac4j.http.client.direct.HeaderClient;
 import org.pac4j.http.client.direct.ParameterClient;
 import org.pac4j.http.client.indirect.FormClient;
 import org.pac4j.http.client.indirect.IndirectBasicAuthClient;
@@ -68,8 +73,18 @@ public class DemoConfigFactory implements ConfigFactory {
         // basic auth
         final DirectBasicAuthClient directBasicAuthClient = new DirectBasicAuthClient(new SimpleTestUsernamePasswordAuthenticator());
 
+        final HeaderClient headerClient = new HeaderClient("Authorization", (credentials, ctx) -> {
+            final String token = ((TokenCredentials) credentials).getToken();
+            if (CommonHelper.isNotBlank(token)) {
+                final CommonProfile profile = new CommonProfile();
+                profile.setId(token);
+                credentials.setUserProfile(profile);
+            }
+        });
+
         final Clients clients = new Clients("http://localhost:8080/callback", oidcClient, saml2Client, facebookClient,
-                twitterClient, formClient, indirectBasicAuthClient, casClient, parameterClient, directBasicAuthClient);
+                twitterClient, formClient, indirectBasicAuthClient, casClient, parameterClient, directBasicAuthClient, new AnonymousClient(),
+                headerClient);
 
         final Config config = new Config(clients);
         config.addAuthorizer("admin", new RequireAnyRoleAuthorizer("ROLE_ADMIN"));

@@ -82,6 +82,16 @@ public class SparkPac4jDemo {
 		get("/logout", new ApplicationLogoutRoute(config, "/?defaulturlafterlogout"));
 		get("/forceLogin", (rq, rs) -> forceLogin(config, rq, rs));
 
+		/*before("/body", (request, response) -> {
+			logger.debug("before /body");
+		});*/
+		//before("/body", new SecurityFilter(config, "AnonymousClient"));
+		before("/body", new SecurityFilter(config, "HeaderClient"));
+		post("/body", (request, response) -> {
+			logger.debug("Body: " + request.body());
+			return "done: " + getProfiles(request, response);
+		});
+
 		exception(Exception.class, (e, request, response) -> {
 			logger.error("Unexpected exception", e);
 			response.body(templateEngine.render(new ModelAndView(new HashMap<>(), "error500.mustache")));

@@ -8,6 +8,7 @@
 
   <logger name="org.pac4j.sparkjava" level="DEBUG" />
   <logger name="org.pac4j.core.engine" level="DEBUG" />
+  <logger name="org.pac4j.demo.spark" level="DEBUG" />
 
   <root level="WARN">
     <appender-ref ref="STDOUT" />
