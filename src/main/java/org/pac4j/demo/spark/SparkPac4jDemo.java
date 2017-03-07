@@ -13,10 +13,11 @@ import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.http.client.indirect.FormClient;
 
+import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
 import org.pac4j.jwt.profile.JwtGenerator;
 import org.pac4j.saml.client.SAML2Client;
-import org.pac4j.sparkjava.ApplicationLogoutRoute;
 import org.pac4j.sparkjava.CallbackRoute;
+import org.pac4j.sparkjava.LogoutRoute;
 import org.pac4j.sparkjava.SecurityFilter;
 import org.pac4j.sparkjava.SparkWebContext;
 import org.slf4j.Logger;
@@ -24,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
-import spark.Route;
 import spark.template.mustache.MustacheTemplateEngine;
 
 import static spark.Spark.*;
@@ -43,6 +43,7 @@ public class SparkPac4jDemo {
 
 		get("/", SparkPac4jDemo::index, templateEngine);
 		final CallbackRoute callback = new CallbackRoute(config, null, true);
+		//callback.setRenewSession(false);
 		get("/callback", callback);
 		post("/callback", callback);
         final SecurityFilter facebookFilter = new SecurityFilter(config, "FacebookClient", "", "excludedPath");
@@ -79,7 +80,16 @@ public class SparkPac4jDemo {
 		get("/dba", SparkPac4jDemo::protectedIndex, templateEngine);
 		get("/rest-jwt", SparkPac4jDemo::protectedIndex, templateEngine);
 		get("/loginForm", (rq, rs) -> form(config), templateEngine);
-		get("/logout", new ApplicationLogoutRoute(config, "/?defaulturlafterlogout"));
+		final LogoutRoute localLogout = new LogoutRoute(config, "/?defaulturlafterlogout");
+		localLogout.setDestroySession(true);
+		get("/logout", localLogout);
+		final LogoutRoute centralLogout = new LogoutRoute(config);
+		centralLogout.setDefaultUrl("http://localhost:8080/?defaulturlafterlogoutafteridp");
+		centralLogout.setLogoutUrlPattern("http://localhost:8080/.*");
+		centralLogout.setLocalLogout(false);
+		centralLogout.setCentralLogout(true);
+		centralLogout.setDestroySession(true);
+		get("/centralLogout", centralLogout);
 		get("/forceLogin", (rq, rs) -> forceLogin(config, rq, rs));
 
 		/*before("/body", (request, response) -> {
@@ -101,6 +111,8 @@ public class SparkPac4jDemo {
 	private static ModelAndView index(final Request request, final Response response) {
 		final Map map = new HashMap();
 		map.put("profiles", getProfiles(request, response));
+		final SparkWebContext ctx = new SparkWebContext(request, response);
+		map.put("sessionId", ctx.getSessionIdentifier());
 		return new ModelAndView(map, "index.mustache");
 	}
 
@@ -110,7 +122,7 @@ public class SparkPac4jDemo {
 		final Optional<CommonProfile> profile = manager.get(true);
 		String token = "";
 		if (profile.isPresent()) {
-			JwtGenerator generator = new JwtGenerator(JWT_SALT);
+			JwtGenerator generator = new JwtGenerator(new SecretSignatureConfiguration(JWT_SALT));
 			token = generator.generate(profile.get());
 		}
 		final Map map = new HashMap();
