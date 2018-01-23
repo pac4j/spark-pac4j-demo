@@ -8,7 +8,6 @@ import org.pac4j.core.client.direct.AnonymousClient;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.config.ConfigFactory;
 import org.pac4j.core.credentials.TokenCredentials;
-import org.pac4j.core.matching.ExcludedPathMatcher;
 import org.pac4j.core.matching.PathMatcher;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.util.CommonHelper;
@@ -65,8 +64,8 @@ public class DemoConfigFactory implements ConfigFactory {
         final IndirectBasicAuthClient indirectBasicAuthClient = new IndirectBasicAuthClient(new SimpleTestUsernamePasswordAuthenticator());
 
         // CAS
-        //final CasConfiguration casConfiguration = new CasConfiguration("https://casserverpac4j.herokuapp.com/login");
-        final CasConfiguration casConfiguration = new CasConfiguration("http://localhost:8888/cas/login");
+        final CasConfiguration casConfiguration = new CasConfiguration("https://casserverpac4j.herokuapp.com/login");
+        //final CasConfiguration casConfiguration = new CasConfiguration("http://localhost:8888/cas/login");
         final CasClient casClient = new CasClient(casConfiguration);
 
         // REST authent with JWT for a token passed in the url as the token parameter
