@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.pac4j.core.client.Client;
-import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
+import org.pac4j.core.context.Pac4jConstants;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
@@ -71,7 +71,7 @@ public class SparkPac4jDemo {
 		get("/saml2", SparkPac4jDemo::protectedIndex, templateEngine);
 		get("/saml2-metadata", (rq, rs) -> {
 			SAML2Client samlclient = config.getClients().findClient(SAML2Client.class);
-			samlclient.init(new SparkWebContext(rq, rs));
+			samlclient.init();
 			return samlclient.getServiceProviderMetadataResolver().getMetadata();
 		});
 		get("/jwt", SparkPac4jDemo::jwt, templateEngine);
@@ -112,7 +112,7 @@ public class SparkPac4jDemo {
 		final Map map = new HashMap();
 		map.put("profiles", getProfiles(request, response));
 		final SparkWebContext ctx = new SparkWebContext(request, response);
-		map.put("sessionId", ctx.getSessionIdentifier());
+		map.put("sessionId", ctx.getSessionStore().getOrCreateSessionId(ctx));
 		return new ModelAndView(map, "index.mustache");
 	}
 
@@ -151,7 +151,7 @@ public class SparkPac4jDemo {
 
 	private static ModelAndView forceLogin(final Config config, final Request request, final Response response) {
         final SparkWebContext context = new SparkWebContext(request, response);
-        final String clientName = context.getRequestParameter(Clients.DEFAULT_CLIENT_NAME_PARAMETER);
+        final String clientName = context.getRequestParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER);
 		final Client client = config.getClients().findClient(clientName);
 		HttpAction action;
 		try {
