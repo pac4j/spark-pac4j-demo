@@ -7,19 +7,16 @@ import java.util.Optional;
 
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
-import org.pac4j.core.context.Pac4jConstants;
-import org.pac4j.core.exception.HttpAction;
+import org.pac4j.core.exception.http.HttpAction;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
+import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.http.client.indirect.FormClient;
 
 import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
 import org.pac4j.jwt.profile.JwtGenerator;
 import org.pac4j.saml.client.SAML2Client;
-import org.pac4j.sparkjava.CallbackRoute;
-import org.pac4j.sparkjava.LogoutRoute;
-import org.pac4j.sparkjava.SecurityFilter;
-import org.pac4j.sparkjava.SparkWebContext;
+import org.pac4j.sparkjava.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
@@ -70,7 +67,7 @@ public class SparkPac4jDemo {
 		get("/cas", SparkPac4jDemo::protectedIndex, templateEngine);
 		get("/saml2", SparkPac4jDemo::protectedIndex, templateEngine);
 		get("/saml2-metadata", (rq, rs) -> {
-			SAML2Client samlclient = config.getClients().findClient(SAML2Client.class);
+			SAML2Client samlclient = config.getClients().findClient(SAML2Client.class).get();
 			samlclient.init();
 			return samlclient.getServiceProviderMetadataResolver().getMetadata();
 		});
@@ -132,7 +129,7 @@ public class SparkPac4jDemo {
 
 	private static ModelAndView form(final Config config) {
 		final Map map = new HashMap();
-		final FormClient formClient = config.getClients().findClient(FormClient.class);
+		final FormClient formClient = config.getClients().findClient(FormClient.class).get();
 		map.put("callbackUrl", formClient.getCallbackUrl());
 		return new ModelAndView(map, "loginForm.mustache");
 	}
@@ -151,15 +148,15 @@ public class SparkPac4jDemo {
 
 	private static ModelAndView forceLogin(final Config config, final Request request, final Response response) {
         final SparkWebContext context = new SparkWebContext(request, response);
-        final String clientName = context.getRequestParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER);
-		final Client client = config.getClients().findClient(clientName);
+        final String clientName = context.getRequestParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER).get();
+		final Client client = config.getClients().findClient(clientName).get();
 		HttpAction action;
 		try {
-			action = client.redirect(context);
+			action = (HttpAction) client.getRedirectionAction(context).get();
 		} catch (final HttpAction e) {
 			action = e;
 		}
-		config.getHttpActionAdapter().adapt(action.getCode(), context);
+		SparkHttpActionAdapter.INSTANCE.adapt(action, context);
 		return null;
     }
 }
