@@ -8,11 +8,12 @@ import java.util.Optional;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.exception.http.HttpAction;
-import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
+import org.pac4j.core.profile.UserProfile;
 import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.http.client.indirect.FormClient;
 
+import org.pac4j.jee.context.session.JEESessionStore;
 import org.pac4j.jwt.config.signature.SecretSignatureConfiguration;
 import org.pac4j.jwt.profile.JwtGenerator;
 import org.pac4j.saml.client.SAML2Client;
@@ -109,14 +110,14 @@ public class SparkPac4jDemo {
 		final Map map = new HashMap();
 		map.put("profiles", getProfiles(request, response));
 		final SparkWebContext ctx = new SparkWebContext(request, response);
-		map.put("sessionId", ctx.getSessionStore().getOrCreateSessionId(ctx));
+		map.put("sessionId", JEESessionStore.INSTANCE.getSessionId(ctx, false));
 		return new ModelAndView(map, "index.mustache");
 	}
 
 	private static ModelAndView jwt(final Request request, final Response response) {
 		final SparkWebContext context = new SparkWebContext(request, response);
-		final ProfileManager manager = new ProfileManager(context);
-		final Optional<CommonProfile> profile = manager.get(true);
+		final ProfileManager manager = new ProfileManager(context, JEESessionStore.INSTANCE);
+		final Optional<UserProfile> profile = manager.getProfile();
 		String token = "";
 		if (profile.isPresent()) {
 			JwtGenerator generator = new JwtGenerator(new SecretSignatureConfiguration(JWT_SALT));
@@ -140,10 +141,10 @@ public class SparkPac4jDemo {
 		return new ModelAndView(map, "protectedIndex.mustache");
 	}
 
-	private static List<CommonProfile> getProfiles(final Request request, final Response response) {
+	private static List<UserProfile> getProfiles(final Request request, final Response response) {
 		final SparkWebContext context = new SparkWebContext(request, response);
-		final ProfileManager manager = new ProfileManager(context);
-		return manager.getAll(true);
+		final ProfileManager manager = new ProfileManager(context, JEESessionStore.INSTANCE);
+		return manager.getProfiles();
 	}
 
 	private static ModelAndView forceLogin(final Config config, final Request request, final Response response) {
@@ -152,7 +153,7 @@ public class SparkPac4jDemo {
 		final Client client = config.getClients().findClient(clientName).get();
 		HttpAction action;
 		try {
-			action = (HttpAction) client.getRedirectionAction(context).get();
+			action = client.getRedirectionAction(context, JEESessionStore.INSTANCE).get();
 		} catch (final HttpAction e) {
 			action = e;
 		}

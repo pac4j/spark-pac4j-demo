@@ -50,7 +50,10 @@ public class DemoConfigFactory implements ConfigFactory {
         //oidcClient.setPreferredJwsAlgorithm(JWSAlgorithm.RS256);
         oidcConfiguration.addCustomParam("prompt", "consent");
         final OidcClient oidcClient = new OidcClient(oidcConfiguration);
-        oidcClient.setAuthorizationGenerator((ctx, profile) -> { profile.addRole("ROLE_ADMIN"); return Optional.of(profile); });
+        oidcClient.setAuthorizationGenerator((ctx, session, profile) -> {
+            profile.addRole("ROLE_ADMIN");
+            return Optional.of(profile);
+        });
 
         final SAML2Configuration cfg = new SAML2Configuration("resource:samlKeystore.jks", "pac4j-demo-passwd",
                                                 "pac4j-demo-passwd", "resource:metadata-okta.xml");
@@ -79,7 +82,7 @@ public class DemoConfigFactory implements ConfigFactory {
         // basic auth
         final DirectBasicAuthClient directBasicAuthClient = new DirectBasicAuthClient(new SimpleTestUsernamePasswordAuthenticator());
 
-        final HeaderClient headerClient = new HeaderClient("Authorization", (credentials, ctx) -> {
+        final HeaderClient headerClient = new HeaderClient("Authorization", (credentials, ctx, sessionStore) -> {
             final String token = ((TokenCredentials) credentials).getToken();
             if (CommonHelper.isNotBlank(token)) {
                 final CommonProfile profile = new CommonProfile();

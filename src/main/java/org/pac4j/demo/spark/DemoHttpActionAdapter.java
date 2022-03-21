@@ -1,10 +1,10 @@
 package org.pac4j.demo.spark;
 
 import org.pac4j.core.context.HttpConstants;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.exception.http.HttpAction;
 import org.pac4j.sparkjava.SparkHttpActionAdapter;
-import org.pac4j.sparkjava.SparkWebContext;
 import spark.ModelAndView;
 import spark.TemplateEngine;
 
@@ -19,7 +19,7 @@ public class DemoHttpActionAdapter extends SparkHttpActionAdapter {
     }
 
     @Override
-    public Object adapt(final HttpAction action, final SparkWebContext context) {
+    public Object adapt(final HttpAction action, final WebContext context) {
         if (action != null) {
             final int code = action.getCode();
             if (code == HttpConstants.UNAUTHORIZED) {
