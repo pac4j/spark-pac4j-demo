@@ -5,8 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import lombok.val;
+import org.pac4j.core.adapter.FrameworkAdapter;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
+import org.pac4j.core.context.CallContext;
+import org.pac4j.core.context.FrameworkParameters;
 import org.pac4j.core.exception.http.HttpAction;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.core.profile.UserProfile;
@@ -35,9 +39,14 @@ public class SparkPac4jDemo {
 
 	private final static MustacheTemplateEngine templateEngine = new MustacheTemplateEngine();
 
+	private static Config CONFIG;
+
 	public static void main(String[] args) {
 		port(8080);
 		final Config config = new DemoConfigFactory(JWT_SALT, templateEngine).build();
+		CONFIG = config;
+
+		FrameworkAdapter.INSTANCE.applyDefaultSettingsIfUndefined(config);
 
 		get("/", SparkPac4jDemo::index, templateEngine);
 		final CallbackRoute callback = new CallbackRoute(config, null, true);
@@ -68,7 +77,7 @@ public class SparkPac4jDemo {
 		get("/cas", SparkPac4jDemo::protectedIndex, templateEngine);
 		get("/saml2", SparkPac4jDemo::protectedIndex, templateEngine);
 		get("/saml2-metadata", (rq, rs) -> {
-			SAML2Client samlclient = config.getClients().findClient(SAML2Client.class).get();
+			val samlclient = (SAML2Client) config.getClients().findClient("SAML2Client").get();
 			samlclient.init();
 			return samlclient.getServiceProviderMetadataResolver().getMetadata();
 		});
@@ -107,53 +116,61 @@ public class SparkPac4jDemo {
     }
 
 	private static ModelAndView index(final Request request, final Response response) {
-		final Map map = new HashMap();
+		val map = new HashMap();
 		map.put("profiles", getProfiles(request, response));
-		final SparkWebContext ctx = new SparkWebContext(request, response);
-		map.put("sessionId", JEESessionStore.INSTANCE.getSessionId(ctx, false));
+		val fp = new SparkFrameworkParameters(request, response);
+		val ctx = new SparkWebContext(request, response);
+		val sessionStore = CONFIG.getSessionStoreFactory().newSessionStore(fp);
+		map.put("sessionId", sessionStore.getSessionId(ctx, false));
 		return new ModelAndView(map, "index.mustache");
 	}
 
 	private static ModelAndView jwt(final Request request, final Response response) {
-		final SparkWebContext context = new SparkWebContext(request, response);
-		final ProfileManager manager = new ProfileManager(context, JEESessionStore.INSTANCE);
-		final Optional<UserProfile> profile = manager.getProfile();
+		val context = new SparkWebContext(request, response);
+		val fp = new SparkFrameworkParameters(request, response);
+		val sessionStore = CONFIG.getSessionStoreFactory().newSessionStore(fp);
+		val manager = CONFIG.getProfileManagerFactory().apply(context, sessionStore);
+		var profile = manager.getProfile();
 		String token = "";
 		if (profile.isPresent()) {
 			JwtGenerator generator = new JwtGenerator(new SecretSignatureConfiguration(JWT_SALT));
 			token = generator.generate(profile.get());
 		}
-		final Map map = new HashMap();
+		val map = new HashMap();
 		map.put("token", token);
 		return new ModelAndView(map, "jwt.mustache");
 	}
 
 	private static ModelAndView form(final Config config) {
-		final Map map = new HashMap();
-		final FormClient formClient = config.getClients().findClient(FormClient.class).get();
+		val map = new HashMap();
+		val formClient = (FormClient) config.getClients().findClient("FormClient").get();
 		map.put("callbackUrl", formClient.getCallbackUrl());
 		return new ModelAndView(map, "loginForm.mustache");
 	}
 
 	private static ModelAndView protectedIndex(final Request request, final Response response) {
-		final Map map = new HashMap();
+		val map = new HashMap();
 		map.put("profiles", getProfiles(request, response));
 		return new ModelAndView(map, "protectedIndex.mustache");
 	}
 
 	private static List<UserProfile> getProfiles(final Request request, final Response response) {
-		final SparkWebContext context = new SparkWebContext(request, response);
-		final ProfileManager manager = new ProfileManager(context, JEESessionStore.INSTANCE);
+		val context = new SparkWebContext(request, response);
+		val fp = new SparkFrameworkParameters(request, response);
+		val sessionStore = CONFIG.getSessionStoreFactory().newSessionStore(fp);
+		val manager = CONFIG.getProfileManagerFactory().apply(context, sessionStore);
 		return manager.getProfiles();
 	}
 
 	private static ModelAndView forceLogin(final Config config, final Request request, final Response response) {
-        final SparkWebContext context = new SparkWebContext(request, response);
-        final String clientName = context.getRequestParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER).get();
-		final Client client = config.getClients().findClient(clientName).get();
+        val context = new SparkWebContext(request, response);
+        val clientName = context.getRequestParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER).get();
+		val client = config.getClients().findClient(clientName).get();
+		val fp = new SparkFrameworkParameters(request, response);
+		val sessionStore = CONFIG.getSessionStoreFactory().newSessionStore(fp);
 		HttpAction action;
 		try {
-			action = client.getRedirectionAction(context, JEESessionStore.INSTANCE).get();
+			action = client.getRedirectionAction(new CallContext(context, sessionStore)).get();
 		} catch (final HttpAction e) {
 			action = e;
 		}
