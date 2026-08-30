@@ -74,7 +74,7 @@ public class DemoConfigFactory implements ConfigFactory {
         val indirectBasicAuthClient = new IndirectBasicAuthClient(new SimpleTestUsernamePasswordAuthenticator());
 
         // CAS
-        val casConfiguration = new CasConfiguration("https://casserverpac4j.herokuapp.com/login");
+        val casConfiguration = new CasConfiguration("https://www.casserverpac4j.dev/login");
         //final CasConfiguration casConfiguration = new CasConfiguration("http://localhost:8888/cas/login");
         val casClient = new CasClient(casConfiguration);
 
