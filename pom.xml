@@ -24,7 +24,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<sparkPac4j.version>6.0.0</sparkPac4j.version>
-		<pac4j.version>6.4.3</pac4j.version>
+		<pac4j.version>6.5.8</pac4j.version>
 		<lombok.version>1.18.48</lombok.version>
 	</properties>
 
@@ -101,11 +101,6 @@
 			<version>${pac4j.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.pac4j</groupId>
-			<artifactId>pac4j-couch</artifactId>
-			<version>${pac4j.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>1.6.4</version>
@@ -127,6 +122,13 @@
 				<version>3.16.0</version>
 				<configuration>
 					<release>${java.version}</release>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 			<plugin>
